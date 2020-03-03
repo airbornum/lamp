@@ -67,28 +67,37 @@ Vagrant.configure("2") do |config|
   #   apt-get update
   #   apt-get install -y apache2
   # SHELL
-  #
-  #
-
-config.vm.define "client" do |client|
-  client.vm.hostname = "client"
-  client.vm.network "private_network", ip: "192.168.33.10"
-end
-
-config.vm.define "web" do |web|
-  web.vm.hostname = "apache"
-  web.vm.network "private_network", ip: "192.168.33.20"
-  web.vm.network "forwarded_port", guest: 80, host: 8080
-  web.vm.provision "ansible" do |ansible|
+  config.vm.define "client" do |client|
+    client.vm.hostname = "client"
+    client.vm.network "private_network", ip: "192.168.33.10"
+  end
+  config.vm.define "web" do |web|
+    web.vm.hostname = "apache"
+    web.vm.network "private_network", ip: "192.168.33.20"
+    web.vm.provision "ansible" do |ansible|
       ansible.playbook = "application.yml"
     end
-end
-
-config.vm.define "db" do |db|
-  db.vm.hostname = "mysql"
-  db.vm.network "private_network", ip: "192.168.33.30"
-  db.vm.provision "ansible" do |ansible|
+  end
+  config.vm.define "webdev" do |web|
+    web.vm.hostname = "apachedev"
+    web.vm.network "private_network", ip: "192.168.33.25"
+    web.vm.provision "ansible" do |ansible|
+      ansible.playbook = "application.yml"
+    end
+  end
+  config.vm.define "db" do |db|
+    db.vm.hostname = "mysql"
+    db.vm.network "private_network", ip: "192.168.33.30"
+    db.vm.provision "ansible" do |ansible|
       ansible.playbook = "database.yml"
     end
-end
+  end
+  config.vm.define "jenkins" do |jenkins|
+    jenkins.vm.box = "bento/ubuntu-18.04"
+    jenkins.vm.hostname = "jenkins"
+    jenkins.vm.network "private_network", ip: "192.168.33.40"
+    jenkins.vm.provision "ansible" do |ansible|
+      ansible.playbook = "jenkins.yml"
+    end
+  end
 end
